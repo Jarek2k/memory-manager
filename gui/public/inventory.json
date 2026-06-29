@@ -1,0 +1,847 @@
+{
+ "schema_version": 3,
+ "generated_at": "2026-06-28T17:45:39Z",
+ "claude_dir": "/Users/demo/.claude",
+ "is_real_claude_dir": false,
+ "budget": {
+  "always_loaded_files": [
+   {
+    "path": "/Users/demo/.claude/CLAUDE.md",
+    "lines": 3,
+    "chars": 76
+   }
+  ],
+  "current_lines": 8,
+  "current_chars": 76,
+  "warn_threshold_lines": 150,
+  "soft_limit_lines": 200,
+  "projected_after_pending_lines": 3
+ },
+ "global": {
+  "claude_md": {
+   "path": "/Users/demo/.claude/CLAUDE.md",
+   "exists": true,
+   "content": "# Persönliche Präferenzen (synthetisch)\n- Antworte knapp.\n- pnpm statt npm.\n",
+   "lines": 3,
+   "chars": 76,
+   "items": [
+    {
+     "type": "heading",
+     "line_start": 1,
+     "line_end": 1,
+     "content": "# Persönliche Präferenzen (synthetisch)",
+     "heading": "Persönliche Präferenzen (synthetisch)",
+     "level": 1
+    },
+    {
+     "type": "bullet",
+     "line_start": 2,
+     "line_end": 2,
+     "content": "- Antworte knapp.",
+     "heading": "Persönliche Präferenzen (synthetisch)",
+     "level": null
+    },
+    {
+     "type": "bullet",
+     "line_start": 3,
+     "line_end": 3,
+     "content": "- pnpm statt npm.",
+     "heading": "Persönliche Präferenzen (synthetisch)",
+     "level": null
+    }
+   ],
+   "content_hash": "06f8d419e2bab0d1"
+  },
+  "rules": [
+   {
+    "filename": "commit-style.md",
+    "path": "~/.claude/rules/commit-style.md",
+    "content": "# Commit-Stil\n\n- Conventional Commits, Subject-only.\n- Imperativ, ≤72 Zeichen, kein Punkt.\n- Kein Body, kein Co-Authored-By.\n",
+    "lines": 5,
+    "chars": 110,
+    "imported": true,
+    "items": [
+     {
+      "type": "heading",
+      "line_start": 1,
+      "line_end": 1,
+      "content": "# Commit-Stil",
+      "heading": "Commit-Stil",
+      "level": 1
+     },
+     {
+      "type": "bullet",
+      "line_start": 3,
+      "line_end": 3,
+      "content": "- Conventional Commits, Subject-only.",
+      "heading": "Commit-Stil",
+      "level": null
+     },
+     {
+      "type": "bullet",
+      "line_start": 4,
+      "line_end": 4,
+      "content": "- Imperativ, ≤72 Zeichen, kein Punkt.",
+      "heading": "Commit-Stil",
+      "level": null
+     },
+     {
+      "type": "bullet",
+      "line_start": 5,
+      "line_end": 5,
+      "content": "- Kein Body, kein Co-Authored-By.",
+      "heading": "Commit-Stil",
+      "level": null
+     }
+    ],
+    "content_hash": "d7269748e0010ce0"
+   }
+  ],
+  "settings": {
+   "path": "~/.claude/settings.json",
+   "rel_path": "~/.claude/settings.json",
+   "parse_ok": true,
+   "permission_count": 5,
+   "hook_count": 1,
+   "permissions": {
+    "allow": [
+     "Bash(git status)"
+    ],
+    "deny": [],
+    "ask": [
+     "Bash(ssh:*)",
+     "Bash(scp:*)",
+     "Bash(rsync:*)",
+     "Bash(sftp:*)"
+    ]
+   },
+   "hooks": [
+    {
+     "event": "PreToolUse",
+     "matcher": "Bash",
+     "commands": [
+      "cmd=$(jq -r '.tool_input.command // \"\"'); if printf '%s' \"$cmd\" | grep -Eq '\\b(ssh|scp|rsync|sftp)\\b'; then echo '{\"permissionDecision\":\"ask\",\"reason\":\"Server-Zugriff bestätigen\"}'; fi"
+     ],
+     "parsed": [
+      {
+       "event": "PreToolUse",
+       "matcher": "Bash",
+       "command": "cmd=$(jq -r '.tool_input.command // \"\"'); if printf '%s' \"$cmd\" | grep -Eq '\\b(ssh|scp|rsync|sftp)\\b'; then echo '{\"permissionDecision\":\"ask\",\"reason\":\"Server-Zugriff bestätigen\"}'; fi",
+       "decision": "ask",
+       "reason": null,
+       "grep_patterns": [
+        "\\b(ssh|scp|rsync|sftp)\\b"
+       ],
+       "summary": "Fragt nach bei Befehlen mit: \\b(ssh|scp|rsync|sftp)\\b.",
+       "summary_source": "template"
+      }
+     ]
+    }
+   ],
+   "parsed": {
+    "allow": [
+     {
+      "raw": "Bash(git status)",
+      "tool": "Bash",
+      "target": "git status",
+      "mode": "exact",
+      "category": "Git",
+      "action": "allow",
+      "summary": "Ohne Nachfrage erlaubt: Git-Befehl `git status`."
+     }
+    ],
+    "deny": [],
+    "ask": [
+     {
+      "raw": "Bash(ssh:*)",
+      "tool": "Bash",
+      "target": "ssh:*",
+      "mode": "glob",
+      "category": "Netzwerk",
+      "action": "ask",
+      "summary": "Nachfragen vor: Netzwerk-/Server-Zugriff `ssh:*`."
+     },
+     {
+      "raw": "Bash(scp:*)",
+      "tool": "Bash",
+      "target": "scp:*",
+      "mode": "glob",
+      "category": "Netzwerk",
+      "action": "ask",
+      "summary": "Nachfragen vor: Netzwerk-/Server-Zugriff `scp:*`."
+     },
+     {
+      "raw": "Bash(rsync:*)",
+      "tool": "Bash",
+      "target": "rsync:*",
+      "mode": "glob",
+      "category": "Netzwerk",
+      "action": "ask",
+      "summary": "Nachfragen vor: Netzwerk-/Server-Zugriff `rsync:*`."
+     },
+     {
+      "raw": "Bash(sftp:*)",
+      "tool": "Bash",
+      "target": "sftp:*",
+      "mode": "glob",
+      "category": "Netzwerk",
+      "action": "ask",
+      "summary": "Nachfragen vor: Netzwerk-/Server-Zugriff `sftp:*`."
+     }
+    ]
+   },
+   "raw": "{\n  \"permissions\": {\n    \"allow\": [\n      \"Bash(git status)\"\n    ],\n    \"deny\": [],\n    \"ask\": [\n      \"Bash(ssh:*)\",\n      \"Bash(scp:*)\",\n      \"Bash(rsync:*)\",\n      \"Bash(sftp:*)\"\n    ]\n  },\n  \"hooks\": {\n    \"PreToolUse\": [\n      {\n        \"matcher\": \"Bash\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"cmd=$(jq -r '.tool_input.command // \\\"\\\"'); if printf '%s' \\\"$cmd\\\" | grep -Eq '\\\\b(ssh|scp|rsync|sftp)\\\\b'; then echo '{\\\"permissionDecision\\\":\\\"ask\\\",\\\"reason\\\":\\\"Server-Zugriff bestätigen\\\"}'; fi\"\n          }\n        ]\n      }\n    ]\n  }\n}\n"
+  }
+ },
+ "insights": [
+  {
+   "kind": "enforceable",
+   "severity": "info",
+   "message": "2 Memories klingen wie harte Regeln — evtl. besser als Hook/Permission.",
+   "entry_ids": [
+    "mobile::feedback_pnpm",
+    "shop::feedback_pnpm"
+   ]
+  },
+  {
+   "kind": "dangling",
+   "severity": "info",
+   "message": "1 Memories verweisen per [[…]] auf nicht (mehr) existierende Einträge.",
+   "entry_ids": [
+    "api::feedback_pnpm"
+   ]
+  },
+  {
+   "kind": "split",
+   "severity": "info",
+   "message": "1 Memories mischen Dauerregel mit Log-Ballast — Split-Kandidaten.",
+   "entry_ids": [
+    "api::project_log"
+   ]
+  },
+  {
+   "kind": "project_rules",
+   "severity": "info",
+   "message": "3 eigene Regeldateien in 2 Projekten gefunden (nur lesbar — siehe Regeln-Ansicht)."
+  }
+ ],
+ "clusters": [
+  {
+   "cluster_hint_id": "c_1",
+   "label_guess": "pnpm",
+   "member_ids": [
+    "api::feedback_pnpm",
+    "mobile::feedback_pnpm",
+    "shop::feedback_pnpm"
+   ],
+   "member_count": 3,
+   "project_count": 3,
+   "basis": "shared tokens: pnpm"
+  }
+ ],
+ "projects": [
+  {
+   "encoded": "-Users-demo-dev-api",
+   "slug": "api",
+   "path": "/Users/demo/dev/api",
+   "path_resolved": true,
+   "memory_dir": "/Users/demo/.claude/projects/-Users-demo-dev-api/memory",
+   "has_index": true,
+   "entry_count": 2,
+   "rules": [
+    {
+     "filename": "CLAUDE.md",
+     "source": "CLAUDE.md",
+     "path": "/Users/demo/dev/x/CLAUDE.md",
+     "rel_path": "CLAUDE.md",
+     "content": "# API Service — Projektregeln\n\n## Tests\n- Vor jedem Commit `pnpm test` laufen lassen; rote Tests blockieren den Merge.\n- Keine Snapshot-Tests für API-Responses — explizite Assertions.\n\n## Stil\n- Fehler immer als `Problem+JSON` (RFC 7807) zurückgeben.\n- Migrationen nie editieren, nur additiv neue anlegen.\n",
+     "truncated": false,
+     "lines": 9,
+     "chars": 306,
+     "unicode_flags": [],
+     "editable": false,
+     "items": [
+      {
+       "type": "heading",
+       "line_start": 1,
+       "line_end": 1,
+       "content": "# API Service — Projektregeln",
+       "heading": "API Service — Projektregeln",
+       "level": 1
+      },
+      {
+       "type": "heading",
+       "line_start": 3,
+       "line_end": 3,
+       "content": "## Tests",
+       "heading": "Tests",
+       "level": 2
+      },
+      {
+       "type": "bullet",
+       "line_start": 4,
+       "line_end": 4,
+       "content": "- Vor jedem Commit `pnpm test` laufen lassen; rote Tests blockieren den Merge.",
+       "heading": "Tests",
+       "level": null
+      },
+      {
+       "type": "bullet",
+       "line_start": 5,
+       "line_end": 5,
+       "content": "- Keine Snapshot-Tests für API-Responses — explizite Assertions.",
+       "heading": "Tests",
+       "level": null
+      },
+      {
+       "type": "heading",
+       "line_start": 7,
+       "line_end": 7,
+       "content": "## Stil",
+       "heading": "Stil",
+       "level": 2
+      },
+      {
+       "type": "bullet",
+       "line_start": 8,
+       "line_end": 8,
+       "content": "- Fehler immer als `Problem+JSON` (RFC 7807) zurückgeben.",
+       "heading": "Stil",
+       "level": null
+      },
+      {
+       "type": "bullet",
+       "line_start": 9,
+       "line_end": 9,
+       "content": "- Migrationen nie editieren, nur additiv neue anlegen.",
+       "heading": "Stil",
+       "level": null
+      }
+     ],
+     "content_hash": "aa5d6abd1f796278"
+    }
+   ],
+   "settings": null
+  },
+  {
+   "encoded": "-Users-demo-dev-mobile",
+   "slug": "mobile",
+   "path": "/Users/demo/dev/mobile",
+   "path_resolved": true,
+   "memory_dir": "/Users/demo/.claude/projects/-Users-demo-dev-mobile/memory",
+   "has_index": true,
+   "entry_count": 1,
+   "rules": [
+    {
+     "filename": "CLAUDE.md",
+     "source": "CLAUDE.md",
+     "path": "/Users/demo/dev/x/CLAUDE.md",
+     "rel_path": "CLAUDE.md",
+     "content": "# Mobile App\n\n- State nur über den zentralen Store, kein lokales `useState` für Serverdaten.\n- Vor PR: `pnpm lint && pnpm test`.\n",
+     "truncated": false,
+     "lines": 4,
+     "chars": 129,
+     "unicode_flags": [],
+     "editable": false,
+     "items": [
+      {
+       "type": "heading",
+       "line_start": 1,
+       "line_end": 1,
+       "content": "# Mobile App",
+       "heading": "Mobile App",
+       "level": 1
+      },
+      {
+       "type": "bullet",
+       "line_start": 3,
+       "line_end": 3,
+       "content": "- State nur über den zentralen Store, kein lokales `useState` für Serverdaten.",
+       "heading": "Mobile App",
+       "level": null
+      },
+      {
+       "type": "bullet",
+       "line_start": 4,
+       "line_end": 4,
+       "content": "- Vor PR: `pnpm lint && pnpm test`.",
+       "heading": "Mobile App",
+       "level": null
+      }
+     ],
+     "content_hash": "d89d650641e09bec"
+    },
+    {
+     "filename": "conventions.md",
+     "source": ".claude/rules/conventions.md",
+     "path": "/Users/demo/dev/x/.claude/rules/conventions.md",
+     "rel_path": ".claude/rules/conventions.md",
+     "content": "# Konventionen\n- Komponenten in PascalCase.\n- Keine Default-Exports.\n",
+     "truncated": false,
+     "lines": 3,
+     "chars": 69,
+     "unicode_flags": [],
+     "editable": false,
+     "items": [
+      {
+       "type": "heading",
+       "line_start": 1,
+       "line_end": 1,
+       "content": "# Konventionen",
+       "heading": "Konventionen",
+       "level": 1
+      },
+      {
+       "type": "bullet",
+       "line_start": 2,
+       "line_end": 2,
+       "content": "- Komponenten in PascalCase.",
+       "heading": "Konventionen",
+       "level": null
+      },
+      {
+       "type": "bullet",
+       "line_start": 3,
+       "line_end": 3,
+       "content": "- Keine Default-Exports.",
+       "heading": "Konventionen",
+       "level": null
+      }
+     ],
+     "content_hash": "e05b6864b238ea37"
+    }
+   ],
+   "settings": {
+    "path": "/Users/demo/dev/mobile/.claude/settings.json",
+    "rel_path": ".claude/settings.json",
+    "parse_ok": true,
+    "permission_count": 3,
+    "hook_count": 1,
+    "permissions": {
+     "allow": [
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm test:*)"
+     ],
+     "deny": [],
+     "ask": [
+      "Bash(git push:*)"
+     ]
+    },
+    "hooks": [
+     {
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "commands": [
+       "jq -r '.tool_input.command' | grep -q 'rm -rf' && exit 2 || exit 0"
+      ],
+      "parsed": [
+       {
+        "event": "PreToolUse",
+        "matcher": "Bash",
+        "command": "jq -r '.tool_input.command' | grep -q 'rm -rf' && exit 2 || exit 0",
+        "decision": null,
+        "reason": null,
+        "grep_patterns": [
+         "rm -rf"
+        ],
+        "summary": "Prüft bei Befehlen mit: rm -rf.",
+        "summary_source": "template"
+       }
+      ]
+     }
+    ],
+    "parsed": {
+     "allow": [
+      {
+       "raw": "Bash(pnpm lint:*)",
+       "tool": "Bash",
+       "target": "pnpm lint:*",
+       "mode": "glob",
+       "category": "Shell",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Shell-Befehl `pnpm lint:*`."
+      },
+      {
+       "raw": "Bash(pnpm test:*)",
+       "tool": "Bash",
+       "target": "pnpm test:*",
+       "mode": "glob",
+       "category": "Tests",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Test-Befehl `pnpm test:*`."
+      }
+     ],
+     "deny": [],
+     "ask": [
+      {
+       "raw": "Bash(git push:*)",
+       "tool": "Bash",
+       "target": "git push:*",
+       "mode": "glob",
+       "category": "Git",
+       "action": "ask",
+       "summary": "Nachfragen vor: Git-Befehl `git push:*`."
+      }
+     ]
+    },
+    "raw": "{\n  \"permissions\": {\n    \"allow\": [\n      \"Bash(pnpm lint:*)\",\n      \"Bash(pnpm test:*)\"\n    ],\n    \"deny\": [],\n    \"ask\": [\n      \"Bash(git push:*)\"\n    ]\n  },\n  \"hooks\": {\n    \"PreToolUse\": [\n      {\n        \"matcher\": \"Bash\",\n        \"hooks\": [\n          {\n            \"type\": \"command\",\n            \"command\": \"jq -r '.tool_input.command' | grep -q 'rm -rf' && exit 2 || exit 0\"\n          }\n        ]\n      }\n    ]\n  }\n}\n"
+   }
+  },
+  {
+   "encoded": "-Users-demo-dev-shop",
+   "slug": "shop",
+   "path": "/Users/demo/dev/shop",
+   "path_resolved": true,
+   "memory_dir": "/Users/demo/.claude/projects/-Users-demo-dev-shop/memory",
+   "has_index": true,
+   "entry_count": 2,
+   "rules": [],
+   "settings": {
+    "path": "/Users/demo/dev/shop/.claude/settings.json",
+    "rel_path": ".claude/settings.json",
+    "parse_ok": true,
+    "permission_count": 12,
+    "hook_count": 0,
+    "permissions": {
+     "allow": [
+      "Bash(pnpm build:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm e2e:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Read(:*)",
+      "Edit(:*)",
+      "Bash(node:*)",
+      "Bash(npx vitest:*)"
+     ],
+     "deny": [],
+     "ask": []
+    },
+    "hooks": [],
+    "parsed": {
+     "allow": [
+      {
+       "raw": "Bash(pnpm build:*)",
+       "tool": "Bash",
+       "target": "pnpm build:*",
+       "mode": "glob",
+       "category": "Shell",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Shell-Befehl `pnpm build:*`."
+      },
+      {
+       "raw": "Bash(pnpm test:*)",
+       "tool": "Bash",
+       "target": "pnpm test:*",
+       "mode": "glob",
+       "category": "Tests",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Test-Befehl `pnpm test:*`."
+      },
+      {
+       "raw": "Bash(pnpm dev:*)",
+       "tool": "Bash",
+       "target": "pnpm dev:*",
+       "mode": "glob",
+       "category": "Shell",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Shell-Befehl `pnpm dev:*`."
+      },
+      {
+       "raw": "Bash(pnpm lint:*)",
+       "tool": "Bash",
+       "target": "pnpm lint:*",
+       "mode": "glob",
+       "category": "Shell",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Shell-Befehl `pnpm lint:*`."
+      },
+      {
+       "raw": "Bash(pnpm typecheck:*)",
+       "tool": "Bash",
+       "target": "pnpm typecheck:*",
+       "mode": "glob",
+       "category": "Shell",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Shell-Befehl `pnpm typecheck:*`."
+      },
+      {
+       "raw": "Bash(pnpm e2e:*)",
+       "tool": "Bash",
+       "target": "pnpm e2e:*",
+       "mode": "glob",
+       "category": "Tests",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Test-Befehl `pnpm e2e:*`."
+      },
+      {
+       "raw": "Bash(git status)",
+       "tool": "Bash",
+       "target": "git status",
+       "mode": "exact",
+       "category": "Git",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Git-Befehl `git status`."
+      },
+      {
+       "raw": "Bash(git diff:*)",
+       "tool": "Bash",
+       "target": "git diff:*",
+       "mode": "glob",
+       "category": "Git",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Git-Befehl `git diff:*`."
+      },
+      {
+       "raw": "Read(:*)",
+       "tool": "Read",
+       "target": ":*",
+       "mode": "glob",
+       "category": "Dateien",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Read: Dateien (`:*`)."
+      },
+      {
+       "raw": "Edit(:*)",
+       "tool": "Edit",
+       "target": ":*",
+       "mode": "glob",
+       "category": "Dateien",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Edit: Dateien (`:*`)."
+      },
+      {
+       "raw": "Bash(node:*)",
+       "tool": "Bash",
+       "target": "node:*",
+       "mode": "glob",
+       "category": "Shell",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Shell-Befehl `node:*`."
+      },
+      {
+       "raw": "Bash(npx vitest:*)",
+       "tool": "Bash",
+       "target": "npx vitest:*",
+       "mode": "glob",
+       "category": "Tests",
+       "action": "allow",
+       "summary": "Ohne Nachfrage erlaubt: Test-Befehl `npx vitest:*`."
+      }
+     ],
+     "deny": [],
+     "ask": []
+    },
+    "raw": "{\n  \"permissions\": {\n    \"allow\": [\n      \"Bash(pnpm build:*)\",\n      \"Bash(pnpm test:*)\",\n      \"Bash(pnpm dev:*)\",\n      \"Bash(pnpm lint:*)\",\n      \"Bash(pnpm typecheck:*)\",\n      \"Bash(pnpm e2e:*)\",\n      \"Bash(git status)\",\n      \"Bash(git diff:*)\",\n      \"Read(:*)\",\n      \"Edit(:*)\",\n      \"Bash(node:*)\",\n      \"Bash(npx vitest:*)\"\n    ],\n    \"deny\": [],\n    \"ask\": []\n  }\n}\n"
+   }
+  }
+ ],
+ "entries": [
+  {
+   "id": "api::feedback_pnpm",
+   "project_encoded": "-Users-demo-dev-api",
+   "project_slug": "api",
+   "project_path": "/Users/demo/dev/api",
+   "file": "/Users/demo/.claude/projects/-Users-demo-dev-api/memory/feedback_pnpm.md",
+   "filename": "feedback_pnpm.md",
+   "frontmatter_shape": "metadata_block",
+   "parse_error": null,
+   "name": "pnpm-too",
+   "description": "pnpm im Backend",
+   "type": "feedback",
+   "node_type": "",
+   "origin_session_id": "",
+   "lines": 8,
+   "chars": 119,
+   "mtime": "2026-06-28T17:45:39Z",
+   "age_days": 0,
+   "why": "",
+   "how": "",
+   "snippet": "Auch hier pnpm. Siehe [[fehlt-nicht]].",
+   "sections": [],
+   "wiki_links": [
+    {
+     "target": "fehlt-nicht",
+     "resolved": false
+    }
+   ],
+   "must_flags": [],
+   "enforceable_candidate": false,
+   "unicode_flags": [],
+   "split_candidate": false,
+   "split_reason": null,
+   "stale": false,
+   "has_dangling_links": true,
+   "global_candidate": true,
+   "cluster_hint_ids": [
+    "c_1"
+   ],
+   "previously_declined_promotion": false
+  },
+  {
+   "id": "api::project_log",
+   "project_encoded": "-Users-demo-dev-api",
+   "project_slug": "api",
+   "project_path": "/Users/demo/dev/api",
+   "file": "/Users/demo/.claude/projects/-Users-demo-dev-api/memory/project_log.md",
+   "filename": "project_log.md",
+   "frontmatter_shape": "top_level",
+   "parse_error": null,
+   "name": "api-log",
+   "description": "",
+   "type": "project",
+   "node_type": "",
+   "origin_session_id": "",
+   "lines": 89,
+   "chars": 830,
+   "mtime": "2026-06-28T17:45:39Z",
+   "age_days": 0,
+   "why": "",
+   "how": "",
+   "snippet": "Dauerregel: API v2.",
+   "sections": [],
+   "wiki_links": [],
+   "must_flags": [],
+   "enforceable_candidate": false,
+   "unicode_flags": [],
+   "split_candidate": true,
+   "split_reason": "2 dated/log sections in 89 lines",
+   "stale": false,
+   "has_dangling_links": false,
+   "global_candidate": false,
+   "cluster_hint_ids": [],
+   "previously_declined_promotion": false
+  },
+  {
+   "id": "mobile::feedback_pnpm",
+   "project_encoded": "-Users-demo-dev-mobile",
+   "project_slug": "mobile",
+   "project_path": "/Users/demo/dev/mobile",
+   "file": "/Users/demo/.claude/projects/-Users-demo-dev-mobile/memory/feedback_pnpm.md",
+   "filename": "feedback_pnpm.md",
+   "frontmatter_shape": "metadata_block",
+   "parse_error": null,
+   "name": "pnpm-mobile",
+   "description": "pnpm mobil",
+   "type": "feedback",
+   "node_type": "",
+   "origin_session_id": "",
+   "lines": 8,
+   "chars": 124,
+   "mtime": "2026-06-28T17:45:39Z",
+   "age_days": 0,
+   "why": "",
+   "how": "",
+   "snippet": "Drittes Projekt: pnpm. Niemals npm verwenden.",
+   "sections": [],
+   "wiki_links": [],
+   "must_flags": [
+    {
+     "phrase": "Niemals",
+     "line": 2
+    }
+   ],
+   "enforceable_candidate": true,
+   "unicode_flags": [],
+   "split_candidate": false,
+   "split_reason": null,
+   "stale": false,
+   "has_dangling_links": false,
+   "global_candidate": true,
+   "cluster_hint_ids": [
+    "c_1"
+   ],
+   "previously_declined_promotion": false
+  },
+  {
+   "id": "shop::feedback_commit",
+   "project_encoded": "-Users-demo-dev-shop",
+   "project_slug": "shop",
+   "project_path": "/Users/demo/dev/shop",
+   "file": "/Users/demo/.claude/projects/-Users-demo-dev-shop/memory/feedback_commit.md",
+   "filename": "feedback_commit.md",
+   "frontmatter_shape": "metadata_block",
+   "parse_error": null,
+   "name": "commit-style",
+   "description": "Subject-only Commits",
+   "type": "feedback",
+   "node_type": "",
+   "origin_session_id": "",
+   "lines": 8,
+   "chars": 125,
+   "mtime": "2026-06-28T17:45:39Z",
+   "age_days": 0,
+   "why": "",
+   "how": "",
+   "snippet": "Commit nur Subject-Line, kein Body.",
+   "sections": [],
+   "wiki_links": [],
+   "must_flags": [
+    {
+     "phrase": "kein",
+     "line": 2
+    }
+   ],
+   "enforceable_candidate": false,
+   "unicode_flags": [],
+   "split_candidate": false,
+   "split_reason": null,
+   "stale": false,
+   "has_dangling_links": false,
+   "global_candidate": false,
+   "cluster_hint_ids": [],
+   "previously_declined_promotion": false
+  },
+  {
+   "id": "shop::feedback_pnpm",
+   "project_encoded": "-Users-demo-dev-shop",
+   "project_slug": "shop",
+   "project_path": "/Users/demo/dev/shop",
+   "file": "/Users/demo/.claude/projects/-Users-demo-dev-shop/memory/feedback_pnpm.md",
+   "filename": "feedback_pnpm.md",
+   "frontmatter_shape": "metadata_block",
+   "parse_error": null,
+   "name": "pnpm-preference",
+   "description": "Immer pnpm",
+   "type": "feedback",
+   "node_type": "",
+   "origin_session_id": "",
+   "lines": 11,
+   "chars": 168,
+   "mtime": "2026-06-28T17:45:39Z",
+   "age_days": 0,
+   "why": "Lockfile.",
+   "how": "Niemals npm, immer pnpm.",
+   "snippet": "Nutzer bevorzugt pnpm.",
+   "sections": [
+    "Why",
+    "How to apply"
+   ],
+   "wiki_links": [],
+   "must_flags": [
+    {
+     "phrase": "Niemals",
+     "line": 5
+    },
+    {
+     "phrase": "immer",
+     "line": 5
+    }
+   ],
+   "enforceable_candidate": true,
+   "unicode_flags": [],
+   "split_candidate": false,
+   "split_reason": null,
+   "stale": false,
+   "has_dangling_links": false,
+   "global_candidate": true,
+   "cluster_hint_ids": [
+    "c_1"
+   ],
+   "previously_declined_promotion": false
+  }
+ ]
+}

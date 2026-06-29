@@ -1,0 +1,13 @@
+{
+  "name": "memory-manager",
+  "owner": { "name": "Jarek2k" },
+  "description": "Cross-project Claude Code memory curation & rule promotion.",
+  "plugins": [
+    {
+      "name": "memory-manager",
+      "source": { "source": "github", "repo": "Jarek2k/memory-manager" },
+      "description": "Overview, curate, and promote Claude Code auto-memory into global rules.",
+      "license": "MIT"
+    }
+  ]
+}

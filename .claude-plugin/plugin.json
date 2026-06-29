@@ -1,0 +1,10 @@
+{
+  "name": "memory-manager",
+  "version": "0.5.0",
+  "description": "Cross-project overview and curation for Claude Code auto-memory; promote recurring project learnings into authored global rules. Local browser GUI, diff-gated apply, never auto-writes.",
+  "author": { "name": "Jarek2k" },
+  "homepage": "https://github.com/Jarek2k/memory-manager",
+  "repository": "https://github.com/Jarek2k/memory-manager",
+  "license": "MIT",
+  "keywords": ["memory", "claude-code", "curation", "rules", "governance", "settings"]
+}

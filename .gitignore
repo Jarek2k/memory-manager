@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+
+# Node / GUI build deps (gui/dist IS committed so end-users need no build)
+gui/node_modules/
+gui/.vite/
+*.tsbuildinfo
+
+# Run artifacts (inventory/decisions/backups live in $TMPDIR, never here)
+*.tmp
+/inventory.json
+/decisions.json
+
+# Local Claude Code settings (machine-local, not shared)
+.claude/settings.local.json
