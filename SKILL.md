@@ -9,7 +9,7 @@ description: >
   memories", "Memory aufräumen", "globale Regel aus Memory machen",
   "Memory-Überblick". Opens a local browser GUI for curation; Claude applies
   the chosen changes to the files with diffs.
-version: 0.5.2
+version: 0.5.3
 allowed-tools: [Bash, Read, Edit, Write]
 ---
 
@@ -76,100 +76,114 @@ SANDBOX=$(python3 "$SKILL_DIR/scripts/sandbox.py" --make)        # copy of ~/.cl
 Then use `--claude-dir "$SANDBOX"` in scan/apply below. The GUI shows a SANDBOX
 banner whenever it isn't pointed at the real `~/.claude`.
 
-## Read-only / plan mode — when to skip the GUI
+## The overview request → open the GUI (the default; do ONLY these three steps)
 
 **The GUI *is* the overview.** "Zeig mir einen Überblick", "review my memory",
-"memory overview / Memory-Überblick" are requests to **open it** (Step 3) — not a
-reason to skip it. An overview ask is the GUI's primary trigger; default to launching
-the live session for *any* overview or curation request.
+"memory overview / Memory-Überblick", "Memory aufräumen", "curate memories" all
+mean **open it**. For these, run **exactly three commands, in order, and nothing
+else**: **Step A scan → Step B start server → Step C open browser**. Then say one
+short sentence and go to Step 4 (wait for curation).
 
-Fall back to a **text-only** summary (do Steps 1–2, summarize as prose, skip Steps
-3–9) in only two cases:
+**Hard rules for this path — they are what keep it deterministic and quiet. Every
+extra Bash call is another permission prompt the user has to click:**
 
-- A system reminder says **plan mode is active** — the server spawns a process and the
-  apply path writes files; neither is allowed in plan mode. Don't ask "live GUI or
-  text?"; just give the text overview, then tell the user the live curation GUI needs
-  them to leave plan mode and offer to launch it then.
-- The user **explicitly** asked for *text only* — e.g. "nur als Text", "ohne Browser",
-  "don't open a browser", "no GUI". A bare "Überblick"/"overview" is **not** this;
-  open the GUI.
+- **Do NOT read or parse `inventory.json`, and do NOT print any memory summary**
+  — no counts, per-project tables, clusters, flags, or budget — **before or after**
+  opening. The GUI already shows all of it; that is its entire job. The only number
+  you may echo is the one line `scan.py` prints by itself.
+- **Do NOT guess the inventory schema or write throwaway parsing scripts.** If you
+  ever feel the urge to `python3 -c "...json..."` the inventory, stop — that work
+  belongs to the GUI, never to you.
+- **Do NOT add "helpful" extra steps.** Three commands, one sentence, then wait.
+  Steps A–C re-derive their own paths, so they are robust even though shell state
+  does **not** persist between Bash calls.
 
-For the text fallback: Step 1 (paths) + Step 2 (scan — it only reads `~/.claude` and
-writes the inventory to a throwaway `$RUN` under `$TMPDIR`, touching nothing of the
-user's), then summarize: projects, memories by type, cross-project clusters, the
-must/enforceable and global-candidate flags, the budget (lines / 200), and the global
-`rules/` + permissions + hooks.
+Skip the GUI and give a **text-only** summary in only two cases:
 
-## Step 1 — set up paths and the run directory
+- A system reminder says **plan mode is active** — the server spawns a process and
+  the apply path writes files; neither is allowed in plan mode. Give the text
+  overview, then tell the user the live GUI needs them to leave plan mode and offer
+  to launch it then.
+- The user **explicitly** asked for text only — "nur als Text", "ohne Browser", "no
+  GUI". A bare "Überblick"/"overview" is **not** this; open the GUI.
+
+For that text fallback only, run Step A (scan), then read `inventory.json` and
+summarize. Use its real shape (don't guess): top-level `entries[]` — one per memory,
+keys incl. `project_slug`, `type`, `global_candidate`, `enforceable_candidate`,
+`must_flags`, `split_candidate`, `has_dangling_links`, `stale`; `clusters[]`
+(`label_guess`, `member_count`, `project_count`); `projects[]`; `budget`
+(`current_lines` / `soft_limit_lines`); `global` (`claude_md`, `rules`, `settings`).
+
+## Step A — scan (deterministic, read-only; creates the run dir)
+
+One command: it resolves the paths, creates the run dir, **persists the run-dir path
+to a fixed pointer file so every later step is independent of shell state**, then
+scans. Run it verbatim:
 
 ```bash
-SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")" && pwd)}"   # plugin: ${CLAUDE_PLUGIN_ROOT}; else dir of this SKILL.md
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"   # plugin sets CLAUDE_PLUGIN_ROOT; for a manual run set this to this file's folder
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 RUN="${TMPDIR:-/tmp}/cc-memory-manager/$(date +%s)-$$"
 mkdir -p "$RUN/backup"
-echo "RUN=$RUN  CLAUDE_DIR=$CLAUDE_DIR"
-```
-
-`${CLAUDE_PLUGIN_ROOT}` is set when this runs as an installed plugin and points at
-the plugin folder. If you run this as a manual (non-plugin) skill that variable is
-unset and the `dirname "$0"` fallback is unreliable inside `bash -c` — so set
-`SKILL_DIR` explicitly to the absolute path of the folder you read this SKILL.md
-from. Either way `scripts/` and `gui/` are siblings of this file.
-
-## Step 2 — scan (deterministic, read-only)
-
-```bash
+printf '%s\n' "$RUN" > "${TMPDIR:-/tmp}/cc-memory-manager/.current-run"   # pointer read by every later step
 python3 "$SKILL_DIR/scripts/scan.py" --claude-dir "$CLAUDE_DIR" --out "$RUN/inventory.json"
 ```
 
-Read the one-line summary it prints (projects, memories, clusters, flags,
-budget). If 0 memories, tell the user there's nothing to curate and stop.
+Report only the single line `scan.py` prints. If it reports 0 memories, tell the
+user there is nothing to curate and stop.
 
-### Step 2b — plain-German summaries for opaque hooks (optional)
+**Every later command** re-derives the paths the same way and reads `RUN` from the
+pointer — **never recompute `RUN` with `date`/`$$` again** (that was the old bug: a
+second `date`/`$$` yields a *different, empty* dir). So begin each subsequent block
+with this preamble:
 
-`scan.py` already produces a German `summary` for every permission and for any
-hook that embeds a `permissionDecisionReason` or matches a known pattern. Only
-genuinely opaque hooks are left with `summary: null` and
-`summary_source: "claude-please-summarize"`. If (and only if) any exist, read
-those hooks' raw `command` strings from `inventory.json` and write a one-sentence
-German `summary` back into each such hook's `parsed[]` entry **in
-`inventory.json` itself** (display metadata only — never touch `settings.json`).
-Skip this step entirely when there are none (the common case). This is the only
-place Claude edits the inventory; it changes nothing in the write path.
+```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"; CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
+```
 
-## Step 3 — start the session server (background) and open it
-
-> Plan mode active, or the user explicitly asked for *text only*? Do **not** start the
-> server — see "Read-only / plan mode" above and stop after the text overview. Otherwise
-> (the default for any overview/curation ask) start it.
+## Step B — start the session server (background)
 
 The GUI is a prebuilt static Vite app under `gui/dist/`. If it's missing (fresh
-clone), build it once: `cd "$SKILL_DIR/gui" && npm install && npm run build`
-(needs Node; only required to build, not to run).
+clone), build it once: `cd "$SKILL_DIR/gui" && npm install && npm run build` (needs
+Node; only required to build, not to run).
 
-The server is **persistent**: it stays up across many submit→apply cycles so the
-user can keep curating without a restart. It self-closes after 30 min idle, or when
-the user clicks **„Fertig"** (which drops `$RUN/close.signal` and stops it).
+The server is **persistent**: it stays up across many submit→apply cycles. It
+self-closes after 30 min idle, or when the user clicks **„Fertig"** (which drops
+`$RUN/close.signal`). Start it with `run_in_background`:
 
 ```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"
+RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 python3 "$SKILL_DIR/scripts/serve.py" --run-dir "$RUN" --gui-dir "$SKILL_DIR/gui/dist" \
-  --port 0 --idle-timeout 1800 --pidfile "$RUN/server.pid" > "$RUN/server.log" 2>&1 &
+  --port 0 --idle-timeout 1800 --pidfile "$RUN/server.pid" > "$RUN/server.log" 2>&1
 ```
 
-Run this with `run_in_background`. Then read the chosen URL and open it:
+## Step C — open the browser
 
 ```bash
-sleep 1
-URL=$(grep -m1 '^URL ' "$RUN/server.log" | awk '{print $2}')
-echo "$URL"
-open "$URL"     # macOS; use xdg-open on Linux
+RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
+for i in $(seq 1 50); do
+  URL=$(grep -m1 '^URL ' "$RUN/server.log" 2>/dev/null | awk '{print $2}')
+  [ -n "$URL" ] && break; sleep 0.2
+done
+echo "$URL"; open "$URL"     # macOS; use xdg-open on Linux
 ```
 
-Tell the user: the overview is open in their browser; curate there and click
-**„Prüfen & freigeben ▶"** to hand a batch to you. While you apply it the browser
-shows a live status strip; afterwards a result panel with **„Weiter bearbeiten"**
-(keep going — no restart) and **„Fertig"** (end the session). A topbar **„Beenden"**
-button can stop the session at any time, not only from the result panel.
+Now tell the user, in **one** sentence, that the overview is open and they curate
+there — click **„Prüfen & freigeben ▶"** to hand you a batch; **„Weiter
+bearbeiten"** / **„Fertig"** (or the topbar **„Beenden"**) decide whether to keep
+going. Then go to Step 4. **Do not summarize the memories.**
+
+### Opaque-hook summaries (rare; NOT part of the open path)
+
+`scan.py` already writes a German `summary` for every permission and known hook.
+Only genuinely opaque hooks are left `summary: null` /
+`summary_source: "claude-please-summarize"` — usually none. Do **not** handle these
+on the open path. Only if the user is specifically curating hooks and some are
+opaque, read those raw `command` strings and write a one-sentence German `summary`
+into each such hook's `parsed[]` entry in `inventory.json` (display metadata only —
+never touch `settings.json`).
 
 ## Step 4 — the session loop (wait for the next submission)
 
@@ -178,6 +192,7 @@ result, then wait again — until the user finishes. Run this **foreground**; it
 blocks until something lands (max 30 min):
 
 ```bash
+RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 ready=
 for i in $(seq 1 1800); do
   [ -f "$RUN/close.signal" ]   && { ready=close; break; }
@@ -197,6 +212,7 @@ At the **start of each cycle**, clear the previous result and flip the browser's
 status strip to "processing":
 
 ```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"; RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 rm -f "$RUN/result.json"
 python3 "$SKILL_DIR/scripts/serve.py" --run-dir "$RUN" --set-status processing \
   --message "Claude bereitet die Änderungen vor …"
@@ -236,6 +252,7 @@ work only you can do, writing the results back into the ops in `decisions.json`:
 ## Step 6 — stage (compute changes, still no writes)
 
 ```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"; CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"; RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 python3 "$SKILL_DIR/scripts/apply.py" --claude-dir "$CLAUDE_DIR" --run-dir "$RUN" --stage
 rm -f "$RUN/decisions.json"   # consumed — so the next POST is detected as fresh
 ```
@@ -270,6 +287,7 @@ When (and only when) you need such a terminal confirmation, set the strip first 
 the browser tells the user to look at the terminal — otherwise it just spins:
 
 ```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"; RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 python3 "$SKILL_DIR/scripts/serve.py" --run-dir "$RUN" --set-status awaiting_terminal \
   --message "Claude wartet auf deine Bestätigung im Terminal."
 diff -u "<original path>" "$RUN/staged/<staged name>"   # drift / judgment ops only
@@ -280,6 +298,7 @@ Then commit the auto-committable plus any user-confirmed paths (backs up origina
 first, writes atomically, appends the audit log, and writes `$RUN/result.json`):
 
 ```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"; CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"; RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 python3 "$SKILL_DIR/scripts/apply.py" --claude-dir "$CLAUDE_DIR" --run-dir "$RUN" \
   --commit --only "<path 1>" "<path 2>" ...
 # or, if nothing is drift/blocked/judgment: --commit --all
@@ -296,13 +315,14 @@ After committing, refresh the inventory so „Weiter bearbeiten" shows the new s
 then flip the strip to `done` (the browser surfaces the result panel):
 
 ```bash
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT:-$PWD}"; CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"; RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 python3 "$SKILL_DIR/scripts/scan.py" --claude-dir "$CLAUDE_DIR" --out "$RUN/inventory.json"
 python3 "$SKILL_DIR/scripts/serve.py" --run-dir "$RUN" --set-status done \
   --message "Übernommen — Ergebnis im Browser. Weiter bearbeiten oder Fertig."
 ```
 
 Then **go back to Step 4** and wait for the next submission. (If new opaque hooks
-appear, redo Step 2b on the fresh inventory; usually nothing to do.)
+appear, redo the opaque-hook summaries on the fresh inventory; usually nothing to do.)
 
 Operation semantics the applier implements (the contract): **edit** replaces the
 body below the frontmatter; **delete** removes the file + its `MEMORY.md` bullet;
@@ -338,6 +358,7 @@ Reached when the Step 4 wait returned `close` or `idle`. The server already stop
 itself (it shuts down on `close.signal` and on idle-out). Make sure it's gone:
 
 ```bash
+RUN="$(cat "${TMPDIR:-/tmp}/cc-memory-manager/.current-run")"
 kill "$(cat "$RUN/server.pid")" 2>/dev/null || true
 ```
 

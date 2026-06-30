@@ -4,6 +4,22 @@ Alle nennenswerten Änderungen an diesem Projekt. Format lose an
 [Keep a Changelog](https://keepachangelog.com/) angelehnt; Versionierung nach
 [SemVer](https://semver.org/).
 
+## [0.5.3] — 2026-06-30
+
+### Changed
+- **Überblick-Pfad hart auf drei Schritte reduziert und deterministisch gemacht.**
+  Der Auf-mach-Ablauf in der SKILL.md ist jetzt genau **Step A scan → Step B Server
+  starten → Step C Browser öffnen** — sonst nichts. Ausdrücklich verboten: vor/nach
+  dem Öffnen `inventory.json` parsen oder eine Memory-Zusammenfassung (Counts,
+  Tabellen, Cluster, Flags, Budget) ausgeben, und das Inventar-Schema raten — das ist
+  Aufgabe der GUI. Damit fallen die Extra-Bash-Aufrufe (= Extra-Permission-Popups)
+  weg, über die sich der Nutzer zu Recht beschwert hat.
+- **Run-Verzeichnis wird über eine feste Pointer-Datei durchgereicht**
+  (`$TMPDIR/cc-memory-manager/.current-run`). Jeder Schritt liest `RUN` daraus,
+  statt sich auf zwischen Bash-Aufrufen *nicht* persistente Shell-Variablen zu
+  verlassen. Behebt den Bug, dass ein erneut via `date`/`$$` berechnetes `RUN` auf
+  ein frisches, leeres Verzeichnis zeigte und der Scan wiederholt werden musste.
+
 ## [0.5.2] — 2026-06-30
 
 ### Fixed
