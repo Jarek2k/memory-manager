@@ -4,6 +4,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format lose an
 [Keep a Changelog](https://keepachangelog.com/) angelehnt; Versionierung nach
 [SemVer](https://semver.org/).
 
+## [0.5.1] — 2026-06-29
+
+### Changed
+- **Read-only/Plan-Mode-Zweig** in der SKILL.md: Wird der Skill in einer read-only Session
+  (Plan-Mode) aufgerufen, startet er direkt den read-only Scan + Text-Überblick — ohne
+  Server, ohne apply/commit und ohne Live-vs-readonly-Rückfrage. Die Live-GUI wird erst
+  angeboten, sobald der Plan-Mode verlassen ist. Spart beim Überblick einen Extra-Turn.
+
 ## [0.5.0] — 2026-06-29
 
 Erstes teilbares Release: als installierbares Claude-Code-Plugin paketiert.
@@ -29,4 +37,5 @@ Erstes teilbares Release: als installierbares Claude-Code-Plugin paketiert.
 - Absicherungs-Pass: Hook-Firing-Test gegen den PreToolUse-Vertrag (jq-Guard) und
   Python↔TS-`decompose`-Paritätstest gegen ein gemeinsames Golden-Corpus.
 
+[0.5.1]: https://github.com/Jarek2k/memory-manager/releases/tag/v0.5.1
 [0.5.0]: https://github.com/Jarek2k/memory-manager/releases/tag/v0.5.0

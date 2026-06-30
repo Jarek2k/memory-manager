@@ -1,6 +1,6 @@
 {
   "name": "memory-manager",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Cross-project overview and curation for Claude Code auto-memory; promote recurring project learnings into authored global rules. Local browser GUI, diff-gated apply, never auto-writes.",
   "author": { "name": "Jarek2k" },
   "homepage": "https://github.com/Jarek2k/memory-manager",

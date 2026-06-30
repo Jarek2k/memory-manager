@@ -9,7 +9,7 @@ description: >
   memories", "Memory aufräumen", "globale Regel aus Memory machen",
   "Memory-Überblick". Opens a local browser GUI for curation; Claude applies
   the chosen changes to the files with diffs.
-version: 0.5.0
+version: 0.5.1
 allowed-tools: [Bash, Read, Edit, Write]
 ---
 
@@ -76,6 +76,21 @@ SANDBOX=$(python3 "$SKILL_DIR/scripts/sandbox.py" --make)        # copy of ~/.cl
 Then use `--claude-dir "$SANDBOX"` in scan/apply below. The GUI shows a SANDBOX
 banner whenever it isn't pointed at the real `~/.claude`.
 
+## Read-only / plan mode — overview without writing
+
+If this session is read-only — a system reminder says **plan mode is active**, or the
+user explicitly asked for just an overview — do **not** start the server (Step 3) and do
+**not** run any apply/commit. The server spawns a process and the apply path writes files;
+neither is allowed in plan mode, and asking "live GUI or text?" only burns a turn.
+
+Instead, go straight to a read-only overview: do Step 1 (paths) + Step 2 (scan — it only
+reads `~/.claude` and writes the inventory to a throwaway `$RUN` under `$TMPDIR`, touching
+nothing of the user's), then summarize the inventory as **text**: projects, memories by
+type, cross-project clusters, the must/enforceable and global-candidate flags, the budget
+(lines / 200), and the global `rules/` + permissions + hooks. Then tell the user that
+curating/promoting (the GUI + apply loop) needs them to leave plan mode, and offer to
+launch the live session then. Skip Steps 3–9 until they do.
+
 ## Step 1 — set up paths and the run directory
 
 ```bash
@@ -114,6 +129,9 @@ Skip this step entirely when there are none (the common case). This is the only
 place Claude edits the inventory; it changes nothing in the write path.
 
 ## Step 3 — start the session server (background) and open it
+
+> Read-only / plan mode? Do **not** start the server — see "Read-only / plan mode" above
+> and stop after the text overview.
 
 The GUI is a prebuilt static Vite app under `gui/dist/`. If it's missing (fresh
 clone), build it once: `cd "$SKILL_DIR/gui" && npm install && npm run build`
