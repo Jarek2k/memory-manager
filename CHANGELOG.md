@@ -4,6 +4,21 @@ Alle nennenswerten Änderungen an diesem Projekt. Format lose an
 [Keep a Changelog](https://keepachangelog.com/) angelehnt; Versionierung nach
 [SemVer](https://semver.org/).
 
+## [0.5.2] — 2026-06-30
+
+### Fixed
+- **Überblick öffnet wieder die GUI.** Der Read-only-Zweig der SKILL.md hatte „der Nutzer
+  hat *nur* einen Überblick verlangt" als Auslöser für den Text-only-Pfad — dadurch ging
+  bei „zeig mir einen Überblick" der Server **nicht** auf, obwohl genau das der Haupt-Trigger
+  der GUI ist. Text-only gilt jetzt nur noch bei aktivem Plan-Mode oder wenn der Nutzer
+  **ausdrücklich** „nur Text / ohne Browser" verlangt; jeder normale Überblicks-/Kurations-
+  Wunsch startet die Live-GUI.
+- **`sandbox.py --make` funktioniert wieder.** Der in SKILL.md/README dokumentierte
+  `--make`-Aufruf war kein gültiges Flag → `$(…)` lieferte einen leeren Pfad, und scan/apply
+  fielen still auf das echte `~/.claude` zurück (genau das Gegenteil des Sandbox-Versprechens).
+  `--make` ist jetzt ein akzeptierter Alias für den Copy-Modus (Default), plus Regressionstest
+  und ein Docstring-Hinweis, den ausgegebenen Pfad vor Gebrauch auf nicht-leer zu prüfen.
+
 ## [0.5.1] — 2026-06-29
 
 ### Changed

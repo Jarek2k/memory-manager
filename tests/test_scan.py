@@ -691,6 +691,26 @@ class SandboxTests(unittest.TestCase):
             # source unchanged
             self.assertEqual(before, set(p.name for p in (src / "projects").iterdir()))
 
+    def test_cli_make_flag_copies_and_prints_path(self):
+        # Regression: the documented `--make` invocation must be accepted and must
+        # print a non-empty path to stdout (an empty value makes scan/apply silently
+        # target the real ~/.claude).
+        import sandbox, io
+        from contextlib import redirect_stdout
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "src"
+            write(src / "projects" / "-x-y" / "memory" / "a.md",
+                  "---\nname: a\ntype: feedback\n---\n\nhi\n")
+            out = Path(d) / "sb"
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = sandbox.main(["--make", "--source", str(src), "--out", str(out)])
+            self.assertEqual(rc, 0)
+            printed = buf.getvalue().strip()
+            self.assertTrue(printed, "sandbox.py --make printed an empty path")
+            self.assertTrue(Path(printed).is_dir())
+            self.assertTrue((Path(printed) / "projects" / "-x-y" / "memory" / "a.md").is_file())
+
 
 class ProjectRulesTests(unittest.TestCase):
     """read_project_rules: read-only discovery of a project's own rules."""

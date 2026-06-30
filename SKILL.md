@@ -9,7 +9,7 @@ description: >
   memories", "Memory aufräumen", "globale Regel aus Memory machen",
   "Memory-Überblick". Opens a local browser GUI for curation; Claude applies
   the chosen changes to the files with diffs.
-version: 0.5.1
+version: 0.5.2
 allowed-tools: [Bash, Read, Edit, Write]
 ---
 
@@ -76,20 +76,29 @@ SANDBOX=$(python3 "$SKILL_DIR/scripts/sandbox.py" --make)        # copy of ~/.cl
 Then use `--claude-dir "$SANDBOX"` in scan/apply below. The GUI shows a SANDBOX
 banner whenever it isn't pointed at the real `~/.claude`.
 
-## Read-only / plan mode — overview without writing
+## Read-only / plan mode — when to skip the GUI
 
-If this session is read-only — a system reminder says **plan mode is active**, or the
-user explicitly asked for just an overview — do **not** start the server (Step 3) and do
-**not** run any apply/commit. The server spawns a process and the apply path writes files;
-neither is allowed in plan mode, and asking "live GUI or text?" only burns a turn.
+**The GUI *is* the overview.** "Zeig mir einen Überblick", "review my memory",
+"memory overview / Memory-Überblick" are requests to **open it** (Step 3) — not a
+reason to skip it. An overview ask is the GUI's primary trigger; default to launching
+the live session for *any* overview or curation request.
 
-Instead, go straight to a read-only overview: do Step 1 (paths) + Step 2 (scan — it only
-reads `~/.claude` and writes the inventory to a throwaway `$RUN` under `$TMPDIR`, touching
-nothing of the user's), then summarize the inventory as **text**: projects, memories by
-type, cross-project clusters, the must/enforceable and global-candidate flags, the budget
-(lines / 200), and the global `rules/` + permissions + hooks. Then tell the user that
-curating/promoting (the GUI + apply loop) needs them to leave plan mode, and offer to
-launch the live session then. Skip Steps 3–9 until they do.
+Fall back to a **text-only** summary (do Steps 1–2, summarize as prose, skip Steps
+3–9) in only two cases:
+
+- A system reminder says **plan mode is active** — the server spawns a process and the
+  apply path writes files; neither is allowed in plan mode. Don't ask "live GUI or
+  text?"; just give the text overview, then tell the user the live curation GUI needs
+  them to leave plan mode and offer to launch it then.
+- The user **explicitly** asked for *text only* — e.g. "nur als Text", "ohne Browser",
+  "don't open a browser", "no GUI". A bare "Überblick"/"overview" is **not** this;
+  open the GUI.
+
+For the text fallback: Step 1 (paths) + Step 2 (scan — it only reads `~/.claude` and
+writes the inventory to a throwaway `$RUN` under `$TMPDIR`, touching nothing of the
+user's), then summarize: projects, memories by type, cross-project clusters, the
+must/enforceable and global-candidate flags, the budget (lines / 200), and the global
+`rules/` + permissions + hooks.
 
 ## Step 1 — set up paths and the run directory
 
@@ -130,8 +139,9 @@ place Claude edits the inventory; it changes nothing in the write path.
 
 ## Step 3 — start the session server (background) and open it
 
-> Read-only / plan mode? Do **not** start the server — see "Read-only / plan mode" above
-> and stop after the text overview.
+> Plan mode active, or the user explicitly asked for *text only*? Do **not** start the
+> server — see "Read-only / plan mode" above and stop after the text overview. Otherwise
+> (the default for any overview/curation ask) start it.
 
 The GUI is a prebuilt static Vite app under `gui/dist/`. If it's missing (fresh
 clone), build it once: `cd "$SKILL_DIR/gui" && npm install && npm run build`

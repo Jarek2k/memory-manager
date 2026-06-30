@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Build a throwaway sandbox Claude config dir for safe experimentation.
 
-`--make` copies the real `~/.claude/{CLAUDE.md, settings.json, projects/*/memory}`
-into `$TMPDIR/cc-memory-manager/sandbox-claude/`. `--synthetic` generates fully
-fake data instead (no private content). Either way you then run scan/serve/apply
-with `--claude-dir <printed path>` so EVERY write lands in the copy and the real
+No flag (or `--make`) copies the real
+`~/.claude/{CLAUDE.md, settings.json, projects/*/memory}` into
+`$TMPDIR/cc-memory-manager/sandbox-claude/`. `--synthetic` generates fully fake
+data instead (no private content). Either way you then run scan/serve/apply with
+`--claude-dir <printed path>` so EVERY write lands in the copy and the real
 `~/.claude` is never touched.
+
+The printed path goes to **stdout** (capture it with `$(...)`); progress goes to
+stderr. Always check the captured path is non-empty before using it as
+`--claude-dir` — an empty value makes scan/apply silently target the real
+`~/.claude`.
 
 The source is only ever READ from. Stdlib only, Python 3.9 compatible.
 """
@@ -105,6 +111,9 @@ def make_synthetic(dest):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="Build a throwaway sandbox Claude dir.")
+    p.add_argument("--make", action="store_true",
+                   help="copy real ~/.claude into the sandbox (this is the default mode; "
+                        "accepted explicitly so the documented `--make` invocation works)")
     p.add_argument("--synthetic", action="store_true",
                    help="generate fake data instead of copying real ~/.claude")
     p.add_argument("--source", default=None, help="source claude dir (default ~/.claude)")
