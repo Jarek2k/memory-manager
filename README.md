@@ -59,9 +59,32 @@ claude plugin install memory-manager@memory-manager
 > `claude plugin …`-CLI oben nutzen und danach das Fenster neu laden.
 
 Das Plugin heißt `memory-manager` und liegt im gleichnamigen Marketplace-Katalog, daher die
-Schreibweise `memory-manager@memory-manager`. Danach im Chat danach fragen, z. B. *„zeig mir
-einen Überblick über meine Memories"* oder *„mach das zu einer globalen Regel"*. Das gebaute
-`gui/dist/` ist im Plugin enthalten — **Endnutzer brauchen kein Node**.
+Schreibweise `memory-manager@memory-manager`. Das gebaute `gui/dist/` ist im Plugin enthalten
+— **Endnutzer brauchen kein Node**. Wie man es danach benutzt, steht unter [Benutzung](#benutzung).
+
+## Aktualisieren
+
+```bash
+claude plugin marketplace update                     # neuen Katalog/Release-Tags holen (alle Marketplaces)
+claude plugin update memory-manager@memory-manager   # Plugin auf die neueste Version bringen
+```
+
+Reihenfolge zählt: **erst** `marketplace update` (zieht die neuen Release-Tags), **dann**
+`plugin update`. Danach **Fenster/Session neu laden** — die CLI weist mit „restart required
+to apply" darauf hin. Die aktuell installierte Version zeigt `claude plugin list`.
+
+## Benutzung
+
+Tipp im Chat einen Satz wie *„zeig mir einen Überblick über meine Memories"* — das Plugin
+öffnet daraufhin seine **Web-GUI** im Browser. Dort läuft die gesamte Kuration per Klick:
+
+- **ansehen** — alle Memories aus allen Projekten an einem Ort, mit Flags, Clustern, Budget;
+- **bearbeiten / löschen / splitten** (Dauerregel behalten, Logs auslagern);
+- **befördern** — eine Lernung als globale Regel nach `~/.claude/rules/` schreiben.
+
+Per **„Prüfen & freigeben ▶"** übergibst du die ausgewählten Änderungen an Claude; der zeigt
+sie als Diff, holt deine Freigabe und schreibt sie (mit Backup). **„Weiter bearbeiten"**
+startet die nächste Runde, **„Fertig"** beendet die Sitzung.
 
 ## Für Mitwirkende
 
@@ -118,9 +141,10 @@ Tests wieder grün bekommen.
 
 ## Status
 
-v0.5.0 — erstes teilbares Release (als Plugin paketiert). Spätere Stufen:
-CCO-artige Voll-Verwaltung (Massen-Verschieben), „Diff seit letztem Lauf" aus dem
-Audit-Log, generierte Hook-Snippets, Multi-Maschinen-Sharing.
+v0.5.3 — als Plugin paketiert; der Überblick-Pfad ist auf drei deterministische
+Schritte reduziert. Vollständige Änderungshistorie in [CHANGELOG.md](CHANGELOG.md).
+Spätere Stufen: CCO-artige Voll-Verwaltung (Massen-Verschieben), „Diff seit letztem
+Lauf" aus dem Audit-Log, Multi-Maschinen-Sharing.
 
 ## Lizenz
 
